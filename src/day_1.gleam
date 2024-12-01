@@ -41,10 +41,12 @@ pub fn part_1(lines: List(String)) {
 
 pub fn part_2(lines: List(String)) -> Int {
   let #(left, right) = parse(lines)
-  use total, current <- list.fold(left, 0)
+  let freqs = frequency(right)
 
-  let occurences = get_frequency(right, current)
-  total + { current * occurences }
+  list.fold(left, 0, fn(total, current) {
+    let occurences = dict.get(freqs, current) |> result.unwrap(0)
+    total + { current * occurences }
+  })
 }
 
 fn parse(lines: List(String)) -> #(List(Int), List(Int)) {
@@ -65,10 +67,8 @@ fn parse_line(line: String) -> List(Int) {
   [left, right]
 }
 
-fn get_frequency(source: List(a), elem: a) -> Int {
+fn frequency(source: List(a)) -> Dict(a, Int) {
   do_frequencis(source, dict.new())
-  |> dict.get(elem)
-  |> result.unwrap(0)
 }
 
 fn do_frequencis(source: List(a), acc: Dict(a, Int)) -> Dict(a, Int) {
