@@ -24,8 +24,12 @@ pub fn part_1(lines: List(String)) {
   list.count(nums, is_safe)
 }
 
-pub fn part_2(_lines: List(String)) {
-  Nil
+pub fn part_2(lines: List(String)) {
+  let input = parse(lines)
+  let #(valids, invalids) = list.partition(input, is_safe)
+  let possible_valids = list.filter(invalids, can_be_made_safe)
+
+  list.length(valids) + list.length(possible_valids)
 }
 
 fn parse(lines: List(String)) -> List(List(Int)) {
@@ -36,8 +40,8 @@ fn parse(lines: List(String)) -> List(List(Int)) {
 }
 
 fn is_safe(list: List(Int)) -> Bool {
-    let assert [x, y, ..] = list
-    is_sorted(list, x > y) && check_diff(list)
+  let assert [x, y, ..] = list
+  is_sorted(list, x > y) && check_diff(list)
 }
 
 fn is_sorted(list: List(Int), asc: Bool) -> Bool {
@@ -45,20 +49,28 @@ fn is_sorted(list: List(Int), asc: Bool) -> Bool {
     [], _ -> True
     [_], _ -> True
     [x, y, ..rest], True -> {
-        x > y && is_sorted([y, ..rest], True)
+      x > y && is_sorted([y, ..rest], True)
     }
     [x, y, ..rest], False -> {
-        x < y && is_sorted([y, ..rest], False)
+      x < y && is_sorted([y, ..rest], False)
     }
   }
 }
 
 fn check_diff(list: List(Int)) -> Bool {
-    case list {
-        [] | [_]-> True
-        [x, y, ..rest] -> {
-            let differ = int.absolute_value(x - y)        
-            {differ > 0 && differ < 4} && check_diff([y, ..rest])
-        }
+  case list {
+    [] | [_] -> True
+    [x, y, ..rest] -> {
+      let differ = int.absolute_value(x - y)
+      { differ > 0 && differ < 4 } && check_diff([y, ..rest])
     }
+  }
+}
+
+// TODO: can be improved
+fn can_be_made_safe(levels: List(Int)) {
+  use index, _ <- utils.index_any(levels)
+
+  let new_levels = utils.index_filter(levels, fn(i, _) { i != index })
+  is_safe(new_levels)
 }
