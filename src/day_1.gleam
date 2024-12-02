@@ -15,14 +15,10 @@ pub fn main() {
 
   lines
   |> part_1()
-  |> string.inspect()
-  |> string.append("Part1: ", _)
   |> io.debug()
 
   lines
   |> part_2()
-  |> string.inspect()
-  |> string.append("Part2: ", _)
   |> io.debug()
 }
 
@@ -60,24 +56,13 @@ fn parse(lines: List(String)) -> #(List(Int), List(Int)) {
 }
 
 fn parse_line(line: String) -> List(Int) {
-  let assert [left, right] = string.split(line, on: "   ")
-  let assert Ok(left) = int.parse(left)
-  let assert Ok(right) = int.parse(right)
-
-  [left, right]
+  line
+  |> string.split(on: "   ")
+  |> list.map(utils.parse_int)
 }
 
 fn frequency(source: List(a)) -> Dict(a, Int) {
-  do_frequencis(source, dict.new())
-}
-
-fn do_frequencis(source: List(a), acc: Dict(a, Int)) -> Dict(a, Int) {
-  case source {
-    [] -> acc
-    [key, ..rest] -> {
-      let new_map = dict.upsert(acc, key, fn(x) { option.unwrap(x, 0) + 1 })
-
-      do_frequencis(rest, new_map)
-    }
-  }
+  list.fold(source, dict.new(), fn(map, key) {
+    dict.upsert(map, key, fn(opt) { option.unwrap(opt, 0) + 1 })
+  })
 }
