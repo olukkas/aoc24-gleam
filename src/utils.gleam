@@ -30,38 +30,3 @@ pub fn at(list: List(a), index: Int) -> Option(a) {
     [_, ..rest], i -> at(rest, i - 1)
   }
 }
-
-pub fn index_any(xs: List(a), f: fn(Int, a) -> Bool) -> Bool {
-  do_index_any(xs, f, 0)
-}
-
-fn do_index_any(xs: List(a), f: fn(Int, a) -> Bool, index: Int) -> Bool {
-  case xs {
-    [] -> False
-    [head, ..tail] ->
-      case f(index, head) {
-        True -> True
-        False -> do_index_any(tail, f, index + 1)
-      }
-  }
-}
-
-pub fn index_filter(xs: List(a), f: fn(Int, a) -> Bool) -> List(a) {
-  do_index_filter(xs, f, 0, [])
-}
-
-fn do_index_filter(
-  xs: List(a),
-  f: fn(Int, a) -> Bool,
-  index: Int,
-  acc: List(a),
-) -> List(a) {
-  case xs {
-    [] -> list.reverse(acc)
-    [head, ..tail] ->
-      case f(index, head) {
-        True -> do_index_filter(tail, f, index + 1, [head, ..acc])
-        False -> do_index_filter(tail, f, index + 1, acc)
-      }
-  }
-}

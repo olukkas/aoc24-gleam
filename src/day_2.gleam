@@ -67,10 +67,13 @@ fn check_diff(list: List(Int)) -> Bool {
   }
 }
 
-// TODO: can be improved
 fn can_be_made_safe(levels: List(Int)) {
-  use index, _ <- utils.index_any(levels)
+  let range = list.range(1, list.length(levels))
 
-  let new_levels = utils.index_filter(levels, fn(i, _) { i != index })
-  is_safe(new_levels)
+  list.any(range, fn(index) {
+    let head = list.take(levels, index - 1)
+    let tail = list.drop(levels, index)
+
+    is_safe(list.flatten([head, tail]))
+  })
 }
