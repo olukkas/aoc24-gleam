@@ -13,7 +13,7 @@ pub fn read_input_file(name: String) -> String {
 
 pub fn lines(content: String) -> List(String) {
   content
-  |> string.split(on: "\r\n")
+  |> string.split(on: "\n")
   |> list.map(string.trim)
 }
 
@@ -28,5 +28,32 @@ pub fn at(list: List(a), index: Int) -> Option(a) {
     [], _ -> None
     [x, ..], 0 -> Some(x)
     [_, ..rest], i -> at(rest, i - 1)
+  }
+}
+
+pub fn head(list: List(a)) -> a {
+  let assert Ok(h) = list.first(list)
+  h
+}
+
+pub fn tail(list: List(a)) -> List(a) {
+  let assert Ok(t) = list.rest(list)
+  t
+}
+
+pub fn zip_with(l1: List(a), l2: List(b), f: fn(a, b) -> c) -> List(c) {
+  do_zip_with(l1, l2, f, [])
+}
+
+fn do_zip_with(
+  list1: List(a),
+  list2: List(b),
+  f: fn(a, b) -> c,
+  acc: List(c),
+) -> List(c) {
+  case list1, list2 {
+    [], _ -> acc
+    _, [] -> acc
+    [x, ..xs], [y, ..ys] -> do_zip_with(xs, ys, f, [f(x, y), ..acc])
   }
 }
