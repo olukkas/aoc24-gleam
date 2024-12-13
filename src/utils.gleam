@@ -57,3 +57,7 @@ fn do_zip_with(
     [x, ..xs], [y, ..ys] -> do_zip_with(xs, ys, f, [f(x, y), ..acc])
   }
 }
+
+pub fn sum(list: List(Int)) -> Int {
+  list.fold(list, 0, fn(a, b) { a + b })
+}

@@ -39,3 +39,10 @@ pub fn part_1_test() {
   |> day_5.part_1()
   |> should.equal(143)
 }
+
+pub fn part_2_test() {
+  example
+  |> string.trim()
+  |> day_5.part_2()
+  |> should.equal(123)
+}

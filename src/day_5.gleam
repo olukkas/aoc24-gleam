@@ -20,15 +20,30 @@ pub fn main() {
   content
   |> part_1()
   |> io.debug()
+
+  content
+  |> part_2()
+  |> io.debug()
 }
 
 pub fn part_1(input: String) -> Int {
-  let #(rel, updates) = parse(input)
+  let #(rules, updates) = parse(input)
 
   updates
-  |> list.filter(is_update_valid(rel, _))
+  |> list.filter(is_update_valid(rules, _))
   |> list.map(get_mids)
-  |> list.fold(0, fn(a, b) { a + b })
+  |> utils.sum()
+}
+
+pub fn part_2(input: String) -> Int {
+  let #(rules, updates) = parse(input)
+  let #(_, unoredered) = list.partition(updates, is_update_valid(rules, _))
+
+  unoredered
+  |> list.map(sort_unordered(rules, _))
+  |> list.map(list.reverse)
+  |> list.map(get_mids)
+  |> utils.sum()
 }
 
 fn parse(input) {
@@ -88,4 +103,28 @@ fn is_update_valid(rules: Rules, updates: List(Int)) -> Bool {
 fn get_mids(list: List(Int)) -> Int {
   let mid_index = length(list) / 2
   utils.at(list, mid_index) |> option.unwrap(0)
+}
+
+fn sort_unordered(rules: Rules, pages: List(Int)) {
+  case pages {
+    [] -> []
+    [x] -> [x]
+    [first, ..rest] -> {
+      let befores =
+        rules
+        |> dict.get(first)
+        |> result.unwrap([])
+        |> list.filter(list.contains(pages, _))
+
+      let afters =
+        rest
+        |> list.filter(fn(num) { !list.contains(befores, num) })
+
+      list.flatten([
+        sort_unordered(rules, befores),
+        [first],
+        sort_unordered(rules, afters),
+      ])
+    }
+  }
 }
